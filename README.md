@@ -38,7 +38,7 @@ Se han incluido tests robustos utilizando el nuevo framework **Swift Testing**:
 
 | Cargando | Sin Resultados |
 |:---:|:---:|
-| <img src="./Screenshots/loading.png" width="200"> | <img src="./Screenshots/empty.png" width="200"> |
+| <img src="./Screenshots/loading1.png" width="200"> | <img src="./Screenshots/empty1.png" width="200"> |
 
 ---
 
