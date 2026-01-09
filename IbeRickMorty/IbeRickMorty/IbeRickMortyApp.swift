@@ -15,7 +15,7 @@ struct IbeRickMortyApp: App {
         WindowGroup {
             ZStack {
                 mainContentView
-                
+
                 if isLoading {
                     ZStack {
                         Color(.systemBackground).ignoresSafeArea()
@@ -42,7 +42,7 @@ struct IbeRickMortyApp: App {
         let apiClient = URLSessionAPIClient()
         let repository = CharacterRepositoryImpl(apiClient: apiClient, cache: cache)
         let useCase = SearchCharactersUseCase(repository: repository)
-        
+
         SearchView(viewModel: SearchViewModel(useCase: useCase))
     }
 }

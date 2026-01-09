@@ -27,7 +27,7 @@ final class SearchViewModel: ObservableObject {
                 let result = try await useCase.execute(query: query)
                 state = .success(result)
             } catch is CancellationError {
-                // no hacer nada
+                // dont do nothing
             } catch {
                 state = .error("¡Dimensión Desconocida!")
             }

@@ -14,15 +14,15 @@ final class MockAPIClient: APIClient {
 
     func request<T: Decodable>(_ url: URL) async throws -> T {
         callCount += 1
-        
+
         guard let response = try stubbedResponse?() else {
             throw NetworkError.decodingError
         }
-        
+
         if let typedResponse = response as? T {
             return typedResponse
         }
-        
+
         throw NetworkError.decodingError
     }
 }
