@@ -14,13 +14,13 @@ struct SearchView: View {
 
     var body: some View {
         NavigationStack {
-            VStack {
-                searchBar
-                content
-                Spacer()
-            }
-            .padding()
-            .navigationTitle("Rick & Morty")
+            content
+                .navigationTitle("Rick & Morty")
+        }
+        .searchable(text: $query, placement: .automatic, prompt: "Busca a Rick, Morty...")
+        .searchPresentationToolbarBehavior(.avoidHidingContent)
+        .onChange(of: query) { _, newQuery in
+            viewModel.search(query: newQuery)
         }
     }
 
@@ -33,7 +33,6 @@ struct SearchView: View {
                     title: "¡Wubba Lubba Dub Dub!",
                     subtitle: "Busca un personaje para abrir el portal"
                 )
-                
             case .loading:
                 VStack {
                     Spacer()
@@ -41,13 +40,12 @@ struct SearchView: View {
                         .scaleEffect(1.5)
                     Spacer()
                 }
-                
             case .success(let characters):
                 if characters.isEmpty {
                     placeholderView(
-                        imageName: "jerry",
-                        title: "¡Dimensión Desconocida!",
-                        subtitle: "Parece que '\(query)' no existe en esta realidad"
+                        imageName: "portal",
+                        title: "¡Wubba Lubba Dub Dub!",
+                        subtitle: "Busca un personaje para abrir el portal"
                     )
                 } else {
                     List(characters) { character in
@@ -59,7 +57,6 @@ struct SearchView: View {
                     }
                     .listStyle(.plain)
                 }
-                
             case .error(let message):
                 placeholderView(
                     imageName: "jerry",
@@ -87,12 +84,10 @@ struct SearchView: View {
                         }
                     }
                 }
-            
             VStack(spacing: 8) {
                 Text(title)
                     .font(.title3)
                     .fontWeight(.bold)
-                
                 Text(subtitle)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
@@ -101,30 +96,7 @@ struct SearchView: View {
             .padding(.horizontal, 40)
             Spacer()
         }
-    }
-    
-    private var searchBar: some View {
-        HStack {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 18, weight: .medium))
-                .foregroundColor(.blue)
-            
-            TextField("Busca a Rick, Morty...", text: $query)
-                .onChange(of: query) { oldQuery, newQuery in
-                    viewModel.search(query: newQuery)
-                }
-            
-            if !query.isEmpty {
-                Button { query = "" } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(.gray)
-                }
-            }
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(10)
+        .padding()
     }
 }
 

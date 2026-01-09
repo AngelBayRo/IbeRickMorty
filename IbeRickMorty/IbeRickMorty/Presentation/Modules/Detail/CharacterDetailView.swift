@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CharacterDetailView: View {
     let character: Character
-    
+
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -23,7 +23,7 @@ struct CharacterDetailView: View {
         .ignoresSafeArea(edges: .top)
         .background(Color(.systemGroupedBackground))
     }
-    
+
     private var headerImage: some View {
         AsyncImage(url: URL(string: character.imageURL)) { image in
             image
@@ -46,7 +46,7 @@ struct CharacterDetailView: View {
             )
         )
     }
-    
+
     private var detailsCard: some View {
         VStack(alignment: .leading, spacing: 20) {
             VStack(alignment: .leading, spacing: 4) {
@@ -55,7 +55,6 @@ struct CharacterDetailView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.blue)
                     .textCase(.uppercase)
-                
                 HStack(alignment: .firstTextBaseline) {
                     Text(character.name)
                         .font(.system(size: 32, weight: .bold, design: .rounded))
@@ -77,7 +76,7 @@ struct CharacterDetailView: View {
         .cornerRadius(24)
         .shadow(color: .black.opacity(0.1), radius: 20, x: 0, y: 10)
     }
-    
+
     private var statusColor: Color {
         character.status.lowercased() == "alive" ? .green : .red
     }
@@ -87,7 +86,7 @@ struct InfoRow: View {
     let label: String
     let value: String
     var color: Color = .primary
-    
+
     var body: some View {
         HStack {
             Text(label)

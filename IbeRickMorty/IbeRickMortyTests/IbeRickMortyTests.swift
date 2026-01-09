@@ -16,12 +16,12 @@ struct IbeRickMortyTests {
     @Test func testSearchUpdatesState() async throws {
         let repo = MockCharacterRepository()
         repo.result = [Character(id: 1, name: "Morty", status: "Alive", species: "Human", imageURL: "")]
-        let vm = SearchViewModel(useCase: SearchCharactersUseCase(repository: repo))
+        let viewModel = SearchViewModel(useCase: SearchCharactersUseCase(repository: repo))
 
-        vm.search(query: "Morty")
+        viewModel.search(query: "Morty")
 
         await confirmation("El estado cambia a success", expectedCount: 1) { done in
-            for await state in vm.$state.values {
+            for await state in viewModel.$state.values {
                 if case .success(let result) = state {
                     #expect(result.count == 1)
                     #expect(result.first?.name == "Morty")
@@ -46,27 +46,27 @@ struct IbeRickMortyTests {
 
     // MARK: - Cache Tests
     @Test func testCacheExpiration() async throws {
-        let cache = MemoryCache<String, Int>(ttl: 0.1) // para que el test sea rápido
+        let cache = MemoryCache<String, Int>(ttl: 0.1)
         cache.set(10, for: "key")
 
         #expect(cache.get("key") == 10)
 
         try await Task.sleep(for: .seconds(0.2))
-        
+
         #expect(cache.get("key") == nil)
     }
-    
+
     @Test func testRepositoryUsesCacheAndSkipsNetwork() async throws {
         let mockAPI = MockAPIClient()
         let cache = MemoryCache<String, [Character]>(ttl: 300)
         let repo = CharacterRepositoryImpl(apiClient: mockAPI, cache: cache)
-        
+
         let character = Character(id: 1, name: "Rick", status: "Alive", species: "Human", imageURL: "")
 
         cache.set([character], for: "rick")
 
         let result = try await repo.searchCharacters(query: "Rick")
-        
+
         #expect(result.count == 1)
         #expect(mockAPI.callCount == 0)
     }
@@ -75,38 +75,38 @@ struct IbeRickMortyTests {
     @Test func testSearchCancellationOnNewQuery() async throws {
         let repo = MockCharacterRepository()
         repo.result = [Character(id: 1, name: "Rick", status: "Alive", species: "Human", imageURL: "")]
-        
-        let useCase = SearchCharactersUseCase(repository: repo)
-        let vm = SearchViewModel(useCase: useCase)
 
-        vm.search(query: "R")
-        vm.search(query: "Ri")
-        vm.search(query: "Rick")
+        let useCase = SearchCharactersUseCase(repository: repo)
+        let viewModel = SearchViewModel(useCase: useCase)
+
+        viewModel.search(query: "R")
+        viewModel.search(query: "Ri")
+        viewModel.search(query: "Rick")
 
         try await Task.sleep(for: .seconds(0.2))
-        
-        if case .success(let characters) = vm.state {
+
+        if case .success(let characters) = viewModel.state {
             #expect(characters.first?.name == "Rick")
         } else {
             Issue.record("El estado final debería ser .success")
         }
     }
-        
+
     // MARK: - Requisito: EXPIRACIÓN
     @Test func testCacheRefreshesFromNetworkAfterExpiration() async throws {
         let mockAPI = MockAPIClient()
         let cache = MemoryCache<String, [Character]>(ttl: 0.1)
         let repo = CharacterRepositoryImpl(apiClient: mockAPI, cache: cache)
-        
+
         cache.set([], for: "rick")
         try await Task.sleep(for: .seconds(0.2))
-        
+
         mockAPI.stubbedResponse = {
             CharacterResponseDTO(results: [
                 CharacterDTO(id: 1, name: "Rick", status: "Alive", species: "Human", image: "")
             ])
         }
-        
+
         _ = try await repo.searchCharacters(query: "Rick")
         #expect(mockAPI.callCount == 1)
     }

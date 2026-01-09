@@ -12,7 +12,7 @@ struct LottieView: UIViewRepresentable {
     let name: String
     let loopMode: LottieLoopMode
     let animationSpeed: CGFloat
-    
+
     init(name: String, loopMode: LottieLoopMode = .loop, animationSpeed: CGFloat = 1.0) {
         self.name = name
         self.loopMode = loopMode
